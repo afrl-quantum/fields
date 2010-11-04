@@ -81,8 +81,8 @@ rule supports_fast_pow ( )
     }
 }
 
-use-project /physical : ../physical ;
-use-project /boost : ../boost ;
+# expect root project from ../ to load other projects
+use-project /root-project : ../ ;
 
 
 project /olson-tools
