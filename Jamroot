@@ -165,6 +165,49 @@ obj rk
     ;
 
 
+alias appsPackOnly
+  : src/olson-tools/fit/appsPackOnly.cpp
+  : #properties
+    <library>/olson-tools//fit
+    <library>/appspack//cdd
+    <library>/appspack//appspack
+    <threading>multi
+  :
+  : # usage requirements
+    <library>/olson-tools//fit
+    <library>/appspack//cdd
+    <library>/appspack//appspack
+    <threading>multi
+    <toolset>gcc:<linkflags>-pthread
+    <toolset>gcc:<cflags>-pthread
+    <toolset>pathscale:<linkflags>-pthread
+    <toolset>pathscale:<cflags>-pthread
+    <toolset>intel:<linkflags>-pthread
+    <toolset>intel:<cflags>-pthread
+  ;
+
+alias gaAppsPack
+  : src/olson-tools/fit/gaAppsPack.cpp
+  : #properties
+    <library>/olson-tools//fit
+    <library>/appspack//cdd
+    <library>/appspack//appspack
+    <threading>multi
+  :
+  : # usage requirements
+    <library>/olson-tools//fit
+    <library>/appspack//cdd
+    <library>/appspack//appspack
+    <threading>multi
+    <toolset>gcc:<linkflags>-pthread
+    <toolset>gcc:<cflags>-pthread
+    <toolset>pathscale:<linkflags>-pthread
+    <toolset>pathscale:<cflags>-pthread
+    <toolset>intel:<linkflags>-pthread
+    <toolset>intel:<cflags>-pthread
+  ;
+
+
 # installation configuration
 
 # options:
