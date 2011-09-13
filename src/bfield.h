@@ -1,3 +1,17 @@
+// -*- c++ -*-
+// $Id$
+/*
+ * Copyright 2004 Spencer Olson
+ *
+ * $Log$
+ *
+ */
+
+/** \file
+ * Bfield namespace includes classes and function for calculating B-fields and
+ * potentials.
+ * Copyright 2004 Spencer Olson.
+ */
 
 #ifndef BFIELD_H
 #define BFIELD_H
@@ -137,6 +151,7 @@ namespace BField {
             gravity[Y] = 0;
             gravity[Z] = 0;
             mass = 0; /* whoah! a massless particle! */
+            mu = (-0.5) * (-1) * physical::constant::mu_B;
         }
         double delta;
         std::vector<ThinCurrentElement> currents;
@@ -147,6 +162,15 @@ namespace BField {
         double gravity[3];
         /** mass of a particle. */
         double mass;
+
+        /**  \f$\mu\f$  == gF * mF * \f$ mu_{B} \f$.
+         * Note that V = \f$\mu\f$ . B
+         * and for dark trapped state (\f$ \left|F=1,m_{F}=-1\right> \f$)
+         *  of \f$^{87}{\rm Rb} \f$,  gF = -1/2.
+         * This defaults to \f$F=1\f$ and \f$m_{F}=-1\f$
+         */
+        double mu;
+
     } __attribute__((packed));
 
     void derivs(const double p[VZ+1], const double * time, double rkf[VZ+1], void * f);
@@ -184,15 +208,13 @@ namespace BField {
         }/* for */
     }
 
-    static const double mu = (-0.5) * (-1) * physical::constant::mu_B;
-
     inline void accel(double a[3], const double r[3], const Args * f) {
         getGradB(a, r, f);
 
         /* evaluating rkf(PX) and rkf(PY) are easy */
-        a[X] = -mu * a[X]/f->mass + f->gravity[X];
-        a[Y] = -mu * a[Y]/f->mass + f->gravity[Y];
-        a[Z] = -mu * a[Z]/f->mass + f->gravity[Z];
+        a[X] = -f->mu * a[X]/f->mass + f->gravity[X];
+        a[Y] = -f->mu * a[Y]/f->mass + f->gravity[Y];
+        a[Z] = -f->mu * a[Z]/f->mass + f->gravity[Z];
     }
 
     /** Calculate the potential of \f$^{87}{\rm Rb}\f$ |F=1,mF=-1>.
@@ -208,7 +230,7 @@ namespace BField {
 
         thgetb(B, r, f);
 
-        return BField::mu*B[3] - f->mass*BField::DOTP(f->gravity,r);
+        return f->mu*B[3] - f->mass*BField::DOTP(f->gravity,r);
     }
 
     /** Calculate the potential of \f$^{87}{\rm Rb}\f$ |F=1,mF=-1> ignoring the
@@ -224,7 +246,7 @@ namespace BField {
 
         thgetb(B, r, f);
 
-        return BField::mu*B[3];
+        return f->mu*B[3];
     }
 
 

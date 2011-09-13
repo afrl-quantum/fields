@@ -1,3 +1,12 @@
+// -*- c++ -*-
+// $Id$
+/*
+ * Copyright 2004 Spencer Olson
+ *
+ * $Log$
+ *
+ */
+
 #include "bfield.h"
 #include <math.h>
 
@@ -32,10 +41,15 @@ void thgetb(double B[4], const double r[3], const Args * f) {
     memset(B, 0, 4*sizeof(double));
         
     /*
-    ! integrate over the fields produced by the discrete
-    ! current elements. The implemented formula can be obtained by
-    ! analytically integrating the field produced by a linear 
-    ! current using Biot-Savart's law. 
+     * integrate over the fields produced by the discrete
+     * current elements. The implemented formula can be obtained by
+     * analytically integrating the field produced by a linear 
+     * current using Biot-Savart's law. 
+     *
+     * Some definitions:
+     *  B(r) == returned bfield (where r is the passed in vector).
+     *  rl   == length of thin wire segment (m).
+     *  rn   == unit vector from point a to point b of thin wire segment.
     */
           
     for (int k = f->currents.size()-1; k >= 0; k--) {
