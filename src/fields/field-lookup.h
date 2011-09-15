@@ -81,8 +81,16 @@ namespace fields {
      */
     FieldLookupBase() : fname(""), initialized(false) {}
 
-    FieldLookupBase(const std::string & filename) : fname(""), initialized(false) {
-        readindata(filename);
+    /** Constructor to read in data from a specific file. */
+    FieldLookupBase(const std::string & filename)
+      : fname(""), initialized(false) {
+      readindata(filename);
+    }
+
+    /** Constructor to read in data from an open stream (cannot reread data). */
+    FieldLookupBase(const std::istream & infile)
+      : fname(""), initialized(false) {
+      readindata(infile);
     }
 
     /** Create a field lookup table where each element in the field is default
@@ -263,6 +271,14 @@ namespace fields {
         THROW(std::runtime_error,"field-lookup::readindata:  invalid filename.");
       }
 
+      readindata(infile);
+    }
+
+    /** Read from an open stream. */
+    void readindata( std::istream & infile ) {
+      if (!infile.good()) {
+        THROW(std::runtime_error,"field-lookup::readindata:  invalid stream.");
+      }
 
       {
         char pound;
@@ -525,7 +541,8 @@ namespace fields {
      * The following employs a 3D lever rule, or triangle rule.
      * @see Jackson's E&M book.
      */
-    inline double scalar_lookup(const Vector<double,3> & r, const unsigned int & i) const {
+    inline double scalar_lookup( const Vector<double,3> & r,
+                                 const unsigned int & i ) const {
       register unsigned int table;
       register unsigned int rhoi, zi;
       register double rhof, zf, rhoF, zF;

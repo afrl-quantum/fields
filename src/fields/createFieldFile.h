@@ -74,7 +74,7 @@ namespace fields {
    *     The shell maxima.
    * @param dxs
    *     The shell stepsize.
-   * @param filename
+   * @param fieldout
    *     The place to store this all.
    * @param comments
    *     A set of lines that begin with '#' each [Default ""].
@@ -87,8 +87,9 @@ namespace fields {
                   const Vector<double,3> & X_MINs,
                   const Vector<double,3> & X_MAXs,
                   const Vector<double,3> & dxs,
-                  const std::string & filename,
+                  std::ostream & fieldout,
                   const std::string & comments = "") {
+
     Vector<double,3> r0(0.0), dlc, dls;
     Vector<int,3> Nc, Ns;
     dlc   = (X_MAXc - X_MINc);
@@ -98,9 +99,6 @@ namespace fields {
     Nc    = compDiv(dlc, dxc) + 1.0;
     Ns    = compDiv(dls, dxs) + 1.0;
 
-    std::ofstream fieldout(filename.c_str());
-    fieldout.precision(8);
-    fieldout << std::scientific;
     fieldout << "# center \n"
                 "# " << r0 << "\n"
                 "# CORE : \n"
@@ -130,9 +128,49 @@ namespace fields {
         THROW(std::runtime_error,"didn't write out " + to_string(N) + ", should have been " + to_string(Ns.prod()));
       }
     } catch (std::exception & e) {
-        std::cout << "failed:  " << e.what() << std::endl;
+        std::cerr << "failed:  " << e.what() << std::endl;
     }
+  }
 
+
+  /** Create the field file from the given parameters.
+   * @param ftable
+   *     The source of field calculation.
+   * @param X_MINc
+   *     The core minima.
+   * @param X_MAXc
+   *     The core maxima.
+   * @param dxc
+   *     The core stepsize.
+   * @param X_MINs
+   *     The shell minima.
+   * @param X_MAXs
+   *     The shell maxima.
+   * @param dxs
+   *     The shell stepsize.
+   * @param filename
+   *     The place to store this all.
+   * @param comments
+   *     A set of lines that begin with '#' each [Default ""].
+   */
+  template <class FieldTable>
+  void createFieldFile(const FieldTable & ftable,
+                  const Vector<double,3> & X_MINc,
+                  const Vector<double,3> & X_MAXc,
+                  const Vector<double,3> & dxc,
+                  const Vector<double,3> & X_MINs,
+                  const Vector<double,3> & X_MAXs,
+                  const Vector<double,3> & dxs,
+                  const std::string & filename,
+                  const std::string & comments = "") {
+    std::ofstream fieldout(filename.c_str());
+    fieldout.precision(8);
+    fieldout << std::scientific;
+    createFieldFile( ftable,
+                     X_MINc, X_MAXc, dxc,
+                     X_MINs, X_MAXs, dxs,
+                     fieldout,
+                     comments );
     fieldout.flush();
     fieldout.close();
   }
