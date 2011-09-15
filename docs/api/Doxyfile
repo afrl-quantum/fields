@@ -25,13 +25,13 @@ DOXYFILE_ENCODING      = UTF-8
 # The PROJECT_NAME tag is a single word (or a sequence of words surrounded 
 # by quotes) that should identify the project.
 
-PROJECT_NAME           = "olson-tools"
+PROJECT_NAME           = "fields"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. 
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER         = "olson-tools 0.1.0"
+PROJECT_NUMBER         = "fields 0.1.0"
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -1248,12 +1248,13 @@ SKIP_FUNCTION_MACROS   = YES
 # is run, you must also specify the path to the tagfile here.
 
 TAGFILES               = \
-    ../../../physical/docs/api/physical.tag=../../../../physical/docs/api/html
+  ../../../physical/docs/api/physical.tag=../../../../physical/docs/api/html \
+  ../../../xylose/docs/api/xylose.tag=../../../../xylose/docs/api/html \
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create 
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE       = olson-tools.tag
+GENERATE_TAGFILE       = fields.tag
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed 
 # in the class index. If set to NO only the inherited external classes 

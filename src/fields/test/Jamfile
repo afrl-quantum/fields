@@ -1,0 +1,5 @@
+unit-test AddField : AddField.cpp ;
+unit-test VectorFieldOps : VectorFieldOps.cpp ;
+unit-test ScalarFieldOps : ScalarFieldOps.cpp ;
+unit-test ScaleField : ScaleField.cpp /physical//physical ;
+unit-test ScaleForce : ScaleForce.cpp /physical//physical ;

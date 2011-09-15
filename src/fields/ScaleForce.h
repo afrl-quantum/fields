@@ -37,15 +37,19 @@
 
 
 
-#ifndef olson_tools_ScaleForce_h
-#define olson_tools_ScaleForce_h
+#ifndef fields_ScaleForce_h
+#define fields_ScaleForce_h
 
-#include <olson-tools/Forces.h>
-#include <olson-tools/timing/Timing.h>
+#include <fields/Forces.h>
+
+#include <xylose/timing/Timing.h>
+#include <xylose/timing/element/Exponential.h>
 
 #include <limits>
 
-namespace olson_tools {
+namespace fields {
+
+  namespace timing = xylose::timing;
 
   template < typename Force >
   struct ScaleForce : virtual BaseForce, Force {
@@ -56,7 +60,11 @@ namespace olson_tools {
     /* NON-MEMBER STORAGE */
   private:
     /** Default timing element applys a unity scaling. */
-    static timing::element::Exponential DefaultTiming;
+    static timing::element::Exponential * mkDefaultTiming() {
+      return new timing::element::Exponential(
+        -std::numeric_limits<double>::infinity(), 1.0, 1.0, 1.0
+      );
+    }
 
     /* MEMBER STORAGE */
   public:
@@ -68,7 +76,7 @@ namespace olson_tools {
     /** Constructor adds default timing element to timing. */
     ScaleForce() : super0(), F(), timing() {
       /* default to having no timing effect. */
-      timing.timings.push_back(&DefaultTiming);
+      timing.timings.push_back( mkDefaultTiming() );
       timing.set_time(0.0);
     }
 
@@ -103,11 +111,6 @@ namespace olson_tools {
     }
   };
 
-  template <class F>
-  timing::element::Exponential ScaleForce<F>::DefaultTiming(
-    -std::numeric_limits<double>::infinity(), 1.0, 1.0, 1.0
-  );
+}/* namespace fields */
 
-}/* namespace olson_tools */
-
-#endif //olson_tools_ScaleForce_h
+#endif //fields_ScaleForce_h

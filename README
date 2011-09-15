@@ -1,16 +1,13 @@
-olson-tools:  A slew of useful code created and gathered over the years.
-    - Copyright 1998-2008 Spencer E. Olson (except as noted by individual files).
+fields:  A generic representation and mechanics for calculating fields/forces.
+    - Copyright 1998-2008 Spencer E. Olson.
 
 
-This software is released under the LGPL license except otherwise explicitly
-stated in individual files included in this package.
+This software is released under the LGPL license.
 
 
 components:
 Jamroot         Overall Boost.Jam build file.
 AUTHORS         A list of those who have contributed with contact info
-ChangeLog       Brief descriptions of changes made between major revisions
-CMakeLists.txt  The main (unfinished) CMake build script.
 licenses        Copies of the licenses used for the pieces of this package.
 docs            documentation, including doxygen generated api documentation
 examples        Examples to demonstrate the use and capability of the package

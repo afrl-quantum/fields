@@ -33,11 +33,11 @@
  * Copyright 2005-2008 Spencer Olson.
  */
 
-#ifndef INDICES_H
-#define INDICES_H
+#ifndef fields_indices_h
+#define fields_indices_h
 
 #ifdef __cplusplus
-namespace olson_tools { namespace indices {
+namespace fields { namespace indices {
 #endif
 
 
@@ -124,7 +124,7 @@ namespace olson_tools { namespace indices {
 
 
 #ifdef __cplusplus
-}} /* namespace olson_tools::indices */
+}} /* namespace fields::indices */
 #endif
 
-#endif // INDICES_H
+#endif // fields_indices_h

@@ -34,14 +34,15 @@
  * Copyright 2004-2005 Spencer Olson.
  */
 
-#ifndef olson_tools_bfield_h
-#define olson_tools_bfield_h
+#ifndef fields_bfield_h
+#define fields_bfield_h
 
-#include <olson-tools/Vector.h>
-#include <olson-tools/power.h>
-#include <olson-tools/indices.h>
-#include <olson-tools/Fields.h>
-#include <olson-tools/Forces.h>
+#include <fields/Fields.h>
+#include <fields/Forces.h>
+#include <fields/indices.h>
+
+#include <xylose/Vector.h>
+#include <xylose/power.h>
 
 #include <physical/physical.h>
 
@@ -50,9 +51,11 @@
 #include <cmath>
 
 
-namespace olson_tools {
+namespace fields {
   namespace BField {
     using namespace indices;
+
+    using xylose::SQR;
 
     class  ThinCurrentElement {
       public:
@@ -296,7 +299,7 @@ namespace olson_tools {
         double mu;
     };
 
-  } /* namespace olson_tools::BField */
-}/* namespace olson_tools */
+  } /* namespace fields::BField */
+}/* namespace fields */
 
-#endif // olson_tools_bfield_h
+#endif // fields_bfield_h

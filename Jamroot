@@ -4,7 +4,7 @@
 #
 #   bjam [options] [properties] [install|stage]
 #
-#   Builds and installs olson-tools.
+#   Builds and installs fields.
 #
 # Targets and Related Options:
 #
@@ -12,7 +12,7 @@
 #   =======                 configured locations (below).
 #
 #   --prefix=<PREFIX>       Install architecture independent files here.
-#                           Default; C:\olson-tools on Win32
+#                           Default; C:\fields on Win32
 #                           Default; /usr/local on Unix. Linux, etc.
 #
 #   --exec-prefix=<EPREFIX> Install architecture dependent files here.
@@ -60,152 +60,24 @@ import package ; # used for installing whole package (provides --prefix related
 path-constant TOP : . ;
 
 #constant VERSION : [ MATCH "\\$Revision: *([0-9]*) *\\$" : "$Revision: 636 $" ] ;
-constant VERSION : [ SHELL "printf `cd $(TOP); git describe 2> /dev/null` || printf olson-tools-0.1.0 " ] ;
+constant VERSION : [ SHELL "printf `cd $(TOP); git describe 2> /dev/null` || printf fields-0.1.0 " ] ;
 
-
-
-
-
-
-local xml2-features = [ mpi.cmdline_to_features [ SHELL "printf '%s ' compiler `xml2-config --cflags --libs`" ] ] ;
-rule supports_fast_pow ( )
-{
-    # this will not work for the pgi compiler
-    if [ MATCH "([xX]86).*" : [ os.platform ] ]
-    {
-        return
-            <toolset>gcc:<define>USE_SPENCERS_FAST_POW
-            <toolset>pathscale:<define>USE_SPENCERS_FAST_POW
-            <toolset>intel:<define>USE_SPENCERS_FAST_POW
-        ;
-    }
-}
 
 # expect root project from ../ to load other projects
 use-project /root-project : ../ ;
 
 
-project /olson-tools
+project /fields
     : requirements
-        $(xml2-features)
-        <threading>multi:<define>USE_PTHREAD
-        <define>OLSON_TOOLS_VERSION=\\\"$(VERSION)\\\"
-        [ supports_fast_pow ]
+        <define>FIELDS_VERSION=$(VERSION)
     : usage-requirements
-        $(xml2-features)
-        <threading>multi:<define>USE_PTHREAD
-        <define>OLSON_TOOLS_VERSION=\\\"$(VERSION)\\\"
-        [ supports_fast_pow ]
+        <define>FIELDS_VERSION=$(VERSION)
     ;
 
-alias headers : : : : <include>src ;
-
-# the xml piece uses <library>/physical//physical, though it is not necessary if
-# you don't use the 'physical-parse' stuff.  
-# there could be some other pieces that will require this too.
-# Maybe I should isolate the things that require linkage to the physical
-# library a little better.
-alias xml : : : : <library>/olson-tools//headers <library>/physical//calc ;
-
-lib random
-    : src/olson-tools/random/random.cpp
-    : <link>static
-      <library>/olson-tools//headers
+alias headers : : :
+    : <include>src
+      <library>/xylose//headers
     ;
-
-lib fit
-    : src/olson-tools/fit/debug.cpp
-      src/olson-tools/fit/Gene.cpp
-      src/olson-tools/fit/io.cpp
-    : <link>static
-      <library>/olson-tools//headers
-      <library>/olson-tools//random
-    ;
-
-lib pow
-    : src/olson-tools/power.c
-    : <link>static
-      <library>/olson-tools//headers
-    ;
-
-lib misc
-    : src/olson-tools/options.cpp
-      src/olson-tools/logger.c
-      src/olson-tools/3j.c
-      src/olson-tools/util.cpp
-      src/olson-tools/m_eps.cpp
-    : <link>static
-      <library>/olson-tools//headers
-    ;
-
-
-# need special compilation for libtrapfe.a
-obj trapfe
-    : src/olson-tools/trapfe.cpp
-    : <optimization>off <variant>debug
-      <library>/olson-tools//headers
-#   : <os>sunos:<define>__EXTENSIONS__<include>/opt/SUNWspro/WS6U2/include/cc
-    ;
-
-obj rk
-    : src/olson-tools/rk.F
-    : #properties
-      <library>/olson-tools//headers
-      <toolset>gcc:<fflags>-ffree-form
-      <toolset>intel:<fflags>-free
-      <toolset>pathscale:<fflags>"-freeform -fno-second-underscore"
-      <toolset>pgi:<fflags>"-Mfreeform -Mnosecond_underscore"
-      <link>static
-    :
-    : # usage requirements
-      <toolset>pathscale:<linkflags>-lpathfortran
-      <toolset>gcc:<linkflags>-lgfortran
-      <toolset>intel:<linkflags>"-lifcore -lifport"
-      <toolset>pgi:<linkflags>"-lpgf90 -lpgf90rtl -lpghpf2 -lpghpf_rpm1 -lpgftnrtl"
-    ;
-
-
-alias appsPackOnly
-  : src/olson-tools/fit/appsPackOnly.cpp
-  : #properties
-    <library>/olson-tools//fit
-    <library>/appspack//cdd
-    <library>/appspack//appspack
-    <threading>multi
-  :
-  : # usage requirements
-    <library>/olson-tools//fit
-    <library>/appspack//cdd
-    <library>/appspack//appspack
-    <threading>multi
-    <toolset>gcc:<linkflags>-pthread
-    <toolset>gcc:<cflags>-pthread
-    <toolset>pathscale:<linkflags>-pthread
-    <toolset>pathscale:<cflags>-pthread
-    <toolset>intel:<linkflags>-pthread
-    <toolset>intel:<cflags>-pthread
-  ;
-
-alias gaAppsPack
-  : src/olson-tools/fit/gaAppsPack.cpp
-  : #properties
-    <library>/olson-tools//fit
-    <library>/appspack//cdd
-    <library>/appspack//appspack
-    <threading>multi
-  :
-  : # usage requirements
-    <library>/olson-tools//fit
-    <library>/appspack//cdd
-    <library>/appspack//appspack
-    <threading>multi
-    <toolset>gcc:<linkflags>-pthread
-    <toolset>gcc:<cflags>-pthread
-    <toolset>pathscale:<linkflags>-pthread
-    <toolset>pathscale:<cflags>-pthread
-    <toolset>intel:<linkflags>-pthread
-    <toolset>intel:<cflags>-pthread
-  ;
 
 
 # installation configuration
@@ -216,7 +88,7 @@ install-properties =
     ;
 
 if [ modules.peek : NT ] {
-    install-properties += <install-default-prefix>C:/olson-tools ;
+    install-properties += <install-default-prefix>C:/fields ;
 } else if [ modules.peek : UNIX ] {
     install-properties += <install-default-prefix>/usr/local ;
 }
@@ -248,7 +120,7 @@ explicit install-code ;
 package.install install-docs
     : $(install-properties)
       <install-source-root>$(TOP)
-      <install-header-subdir>../share/olson-tools
+      <install-header-subdir>../share/fields
     :
     :
     : $(docs)
@@ -263,7 +135,7 @@ explicit stage ;
 
 #
 # figure out the way to install this:
-# pkgconfig_DATA = olson-tools.pc
+# pkgconfig_DATA = fields.pc
 
 # 
 

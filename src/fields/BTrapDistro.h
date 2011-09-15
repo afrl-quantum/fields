@@ -39,17 +39,19 @@
  * Copyright 2005 Spencer Olson.
  */
 
-#ifndef BTRAP_DISTRO_H
-#define BTRAP_DISTRO_H
+#ifndef fields_BTrapDistro_h
+#define fields_BTrapDistro_h
 
-#include <olson-tools/bfield.h>
-#include <olson-tools/logger.h>
-#include <olson-tools/Vector.h>
-#include <olson-tools/InvCylindricalDist.h>
+#include <fields/bfield.h>
+#include <fields/InvCylindricalDist.h>
+
+#include <xylose/logger.h>
+#include <xylose/Vector.h>
 
 #include <physical/physical.h>
 
-namespace olson_tools { namespace BField {
+namespace fields {
+  namespace BField {
 
     template <class BSrc>
     class BTrap2DInit {
@@ -140,6 +142,7 @@ namespace olson_tools { namespace BField {
         }
     };
 
-}} /* namespace olson_tools::BField */
+  }
+} /* namespace fields::BField */
 
-#endif // BTRAP_DISTRO_H
+#endif // fields_BTrapDistro_h

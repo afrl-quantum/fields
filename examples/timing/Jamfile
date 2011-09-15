@@ -1,0 +1,3 @@
+exe testtiming : testtiming.cpp /fields//headers /physical//physical ;
+path-constant DIR : . ;
+install convenient-copy : testtiming : <location>$(DIR) ;
