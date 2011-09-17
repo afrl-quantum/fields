@@ -40,10 +40,14 @@ namespace {
 } /* namespace (anon) */
 
 int main() {
+  ChimpDB db;
+  db.addParticleType("87Rb");
+  db.initBinaryInteractions();
+
   /* Dynamic Field Calc */
   BFieldForce bsrc;
+  bsrc.db = & db;
   addwires(bsrc);
-  bsrc.mass = mass;
   bsrc.Gravity::bg[Z] = -physical::unit::gravity;
   bsrc.delta = delta_B;
 

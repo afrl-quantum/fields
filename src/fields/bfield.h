@@ -40,6 +40,9 @@
 #include <fields/Fields.h>
 #include <fields/Forces.h>
 #include <fields/indices.h>
+#include <fields/make_options.h>
+
+#include <chimp/property/mass.h>
 
 #include <xylose/Vector.h>
 #include <xylose/power.h>
@@ -250,30 +253,55 @@ namespace fields {
      *
      * @see Derivs::derivs.
      */
-    template <class BSrc>
-    class BCalcs : public virtual BaseForce, public BSrc {
-      public:
-        typedef BaseForce super0;
-        typedef BSrc      super1;
+    template <
+      typename BSrc,
+      typename options = fields::make_options<>::type
+    >
+    struct BCalcs : virtual BaseForce<options>, BSrc {
+      /* TYPEDEFS */
+        typedef BaseForce<options> super0;
+        typedef BSrc               super1;
 
+
+        /* MEMBER STORAGE */
+        /**  \f$\mu\f$  == gF * mF * \f$ mu_{B} \f$.
+         * Note that V = \f$\mu\f$ . B
+         * and for dark trapped state (\f$ \left|F=1,m_{F}=-1\right> \f$)
+         *  of \f$^{87}{\rm Rb} \f$,  gF = -1/2.
+         * This defaults to \f$F=1\f$ and \f$m_{F}=-1\f$
+         */
+        double mu;
+
+        /* MEMBER FUNCTIONS */
         /** Default constructor of BCalcs. */
-        inline BCalcs() : super0(), super1() {
+        BCalcs() : super0(), super1() {
             mu = (-0.5) * (-1) * physical::constant::si::mu_B;
         }
 
-        inline const BCalcs & operator=(const BCalcs & that) {
+        const BCalcs & operator=(const BCalcs & that) {
             mu = that.mu;
             return *this;
         }
     
-        inline void accel(      Vector<double,3> & a,
-                          const Vector<double,3> & r,
-                          const Vector<double,3> & v = V3(0,0,0),
-                          const double & t = 0.0,
-                          const double & dt = 0.0 ) const {
-            //gradient(a, magnitude_of<super1>((const super1&)*this), r);
-            gradient_of_magnitude(a, (super1&)*this, r);
-            a *= - mu / super0::mass;
+        void accel(      Vector<double,3> & a,
+                   const Vector<double,3> & r,
+                   const Vector<double,3> & v = V3(0.,0.,0.),
+                   const double & t = 0.0,
+                   const double & dt = 0.0,
+                   const unsigned int & species = 0u ) const {
+          //gradient(a, magnitude_of<super1>((const super1&)*this), r);
+          gradient_of_magnitude(a, (super1&)*this, r);
+          a *= - mu / (*super0::db)[species].chimp::property::mass::value;
+        }
+    
+        template < typename P >
+        void accel(      Vector<double,3> & a,
+                   const Vector<double,3> & r,
+                   const Vector<double,3> & v,
+                   const double & t,
+                   const double & dt,
+                         P & p ) const {
+          this->accel( a, r, v, t, dt, species(p) );
         }
     
         /** Calculate the magnetic potential of \f$^{87}{\rm Rb}\f$ |F=1,mF=-1>.
@@ -282,21 +310,23 @@ namespace fields {
          * where \f$\mu\f$  == gF * mF * \f$ mu_{B} \f$
          *
          */
-        inline double potential(const Vector<double,3> & r,
-                                const Vector<double,3> & v = V3(0,0,0),
-                                const double & t = 0.0) const {
-            Vector<double,3> B;
-            super1::operator()(B, r);
-            return mu * B.abs();
+        double potential(const Vector<double,3> & r,
+                         const Vector<double,3> & v = V3(0.,0.,0.),
+                         const double & t = 0.0,
+                         const unsigned int & species = 0u ) const {
+          Vector<double,3> B;
+          super1::operator()(B, r);
+          return mu * B.abs();
         }
 
-        /**  \f$\mu\f$  == gF * mF * \f$ mu_{B} \f$.
-         * Note that V = \f$\mu\f$ . B
-         * and for dark trapped state (\f$ \left|F=1,m_{F}=-1\right> \f$)
-         *  of \f$^{87}{\rm Rb} \f$,  gF = -1/2.
-         * This defaults to \f$F=1\f$ and \f$m_{F}=-1\f$
-         */
-        double mu;
+        template < typename P >
+        double potential(const Vector<double,3> & r,
+                         const Vector<double,3> & v,
+                         const double & t,
+                         const P & p ) const {
+          return this->potential(r,v,t);
+        }
+
     };
 
   } /* namespace fields::BField */

@@ -13,7 +13,6 @@ namespace {
   using namespace physical::units;
 
   const double I = 300.0 * Ampere;
-  const double mass = 87.0 * amu; /* mass of 87Rb */
   const double delta_B = 0.1 * microns;
 
   namespace fbf = fields::BField;
@@ -36,10 +35,13 @@ namespace {
     for (int i = 0; fabs(wires[i].I) > 0; bsrc.currents.push_back(wires[i++]));
   }
 
+  typedef fields::Gravity<> Gravity;
   typedef fields::AddForce<
     fbf::BCalcs< fbf::ThinWireSrc >,
-    fields::Gravity
+    Gravity
   > BFieldForce;
+
+  typedef BFieldForce::options::ChimpDB ChimpDB;
 
   typedef fields::ForceTableWrapper< BFieldForce > BFieldForceTableSrc;
 

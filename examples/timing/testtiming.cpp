@@ -3,6 +3,8 @@
 #include <fields/ScaleField.h>
 #include <fields/ScaleForce.h>
 
+#include <chimp/RuntimeDB.h>
+
 #include <xylose/Vector.h>
 #include <xylose/timing/Timing.h>
 #include <xylose/timing/Printer.h>
@@ -29,7 +31,8 @@ namespace {
 
   typedef ScaleField< BgField<double> > ScaledScalarField;
   typedef ScaleField< BgField< Vector<double,3> > > ScaledVectorField;
-  typedef ScaleForce< Gravity > ScaledGravity;
+  typedef ScaleForce< Gravity<> > ScaledGravity;
+  typedef ScaledGravity::options::ChimpDB ChimpDB;
 }/* namespace anon */
 
 
@@ -37,9 +40,15 @@ int main() {
   double t_max = 15.*ms;
   double dt    = 0.1*ms;
 
+  ChimpDB db;
+  db.addParticleType("Hg");
+  db.initBinaryInteractions();
+
   ScaledGravity gravity;
   ScaledScalarField sfield;
   ScaledVectorField vfield;
+
+  gravity.db = & db;
 
   timing::TimingsVector gtimings;
   gtimings.push_back(new timing::element::Exponential(3.*ms, 1.0, 0.0, 0.0));

@@ -26,10 +26,13 @@ namespace {
 }
 
 int main() {
-  BFieldForceTableSrc bsrc;
-  addwires(bsrc);
+  ChimpDB db;
+  db.addParticleType("87Rb");
+  db.initBinaryInteractions();
 
-  bsrc.mass = mass;
+  BFieldForceTableSrc bsrc;
+  bsrc.db = & db;
+  addwires(bsrc);
   bsrc.Gravity::bg[Z] = -physical::unit::gravity;
   bsrc.delta = delta_B;
 

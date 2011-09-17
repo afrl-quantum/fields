@@ -41,6 +41,7 @@
 #define fields_ScaleForce_h
 
 #include <fields/Forces.h>
+#include <fields/make_options.h>
 
 #include <xylose/timing/Timing.h>
 #include <xylose/timing/element/Exponential.h>
@@ -52,9 +53,10 @@ namespace fields {
   namespace timing = xylose::timing;
 
   template < typename Force >
-  struct ScaleForce : virtual BaseForce, Force {
+  struct ScaleForce
+    : virtual BaseForce<typename Force::super0::options>, Force {
     /* TYPEDEFS */
-    typedef BaseForce super0;
+    typedef BaseForce<typename Force::super0::options> super0;
     typedef Force F;
 
     /* NON-MEMBER STORAGE */
@@ -91,23 +93,47 @@ namespace fields {
     /** Calculate acceleration. */
     inline void accel(       Vector<double,3> & a,
                        const Vector<double,3> & r,
-                       const Vector<double,3> & v = V3(0,0,0),
+                       const Vector<double,3> & v = V3(0.,0.,0.),
                        const double & t = 0.0,
-                       const double & dt = 0.0 ) const {
-      F::accel(a,r,v,t,dt);
+                       const double & dt = 0.0,
+                       const unsigned int & species = 0u ) const {
+      F::accel(a,r,v,t,dt,species);
+      a *= timing.getVal();
+    }
+
+    template < typename P >
+    inline void accel(       Vector<double,3> & a,
+                       const Vector<double,3> & r,
+                       const Vector<double,3> & v,
+                       const double & t,
+                       const double & dt,
+                             P & p ) const {
+      F::accel(a,r,v,t,dt,p);
       a *= timing.getVal();
     }
 
     inline double potential( const Vector<double,3> & r,
                              const Vector<double,3> & v = V3(0,0,0),
-                             const double & t = 0.0 ) const {
-      return timing.getVal() * F::potential(r,v,t);
+                             const double & t = 0.0,
+                             const unsigned int & species = 0u ) const {
+      return timing.getVal() * F::potential(r,v,t,species);
     }
 
-    template <unsigned int ndim_>
-    inline void applyStatisticalForce(Vector<double,ndim_> & particle,
-                                      const double & t, const double & dt) const {
-      F::applyStatisticalForce( particle, t, timing.getVal() * dt );
+    template < typename P >
+    inline double potential( const Vector<double,3> & r,
+                             const Vector<double,3> & v,
+                             const double & t,
+                                   P & p ) const {
+      return timing.getVal() * F::potential(r,v,t,p);
+    }
+
+    template < unsigned int ndim,
+               typename Particle >
+    inline void applyStatisticalForce(       Vector<double,ndim> & xv,
+                                       const double & t,
+                                       const double & dt,
+                                             Particle & particle ) const {
+      F::applyStatisticalForce( xv, t, timing.getVal() * dt, particle );
     }
   };
 
