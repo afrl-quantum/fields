@@ -238,8 +238,9 @@ namespace fields {
 
     /* MEMBER FUNCTIONS */
   public:
-    AddForce()
-      : super0(), F0(), F1(), F2(), F3(), F4(), F5(), F6(), F7(), F8(), F9() {}
+    AddForce( const typename super0::options::ChimpDB * db = NULL )
+      : super0(db),
+        F0(), F1(), F2(), F3(), F4(), F5(), F6(), F7(), F8(), F9() {}
 
     const AddForce & operator=(const AddForce & that) {
       super0::operator=(that);
