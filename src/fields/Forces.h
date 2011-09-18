@@ -34,6 +34,8 @@
 #include <fields/Fields.h>
 #include <fields/indices.h>
 #include <fields/make_options.h>
+#include <fields/detail/assert.h>
+#include <fields/detail/NullForce.h>
 
 #include <chimp/property/mass.h>
 
@@ -111,9 +113,9 @@ namespace fields {
   struct BaseForce {
     typedef _options options;
     /** Pointer to chimp instance. */
-    typename options::ChimpDB * db;
+    const typename options::ChimpDB * db;
 
-    BaseForce() : db(NULL) { }
+    BaseForce( const typename options::ChimpDB * db = NULL ) : db(db) { }
   };
 
   template < typename options = fields::make_options<>::type >
@@ -192,35 +194,84 @@ namespace fields {
    *
    * @see BField::BCalcs.
    */
-  template < class _F0, class _F1 >
+  template <
+    typename _F0,
+    typename _F1,
+    typename _F2 = detail::NullForce<typename _F0::super0::options, 2u>,
+    typename _F3 = detail::NullForce<typename _F0::super0::options, 3u>,
+    typename _F4 = detail::NullForce<typename _F0::super0::options, 4u>,
+    typename _F5 = detail::NullForce<typename _F0::super0::options, 5u>,
+    typename _F6 = detail::NullForce<typename _F0::super0::options, 6u>,
+    typename _F7 = detail::NullForce<typename _F0::super0::options, 7u>,
+    typename _F8 = detail::NullForce<typename _F0::super0::options, 8u>,
+    typename _F9 = detail::NullForce<typename _F0::super0::options, 9u>
+  >
   class AddForce : public virtual BaseForce<typename _F0::super0::options>,
-                   public _F0, public _F1 {
+                   public _F0, public _F1, public _F2, public _F3, public _F4,
+                   public _F5, public _F6, public _F7, public _F8, public _F9 {
+    /* TYPEDEFS */
   public:
-    /* using _F1 here is intentional to help make sure that both forces are
-     * using the same BaseForce::options. */
-    typedef BaseForce<typename _F1::super0::options> super0;
+    typedef BaseForce<
+      typename fields::detail
+      ::assert< typename _F0::super0::options >
+        ::template same< typename _F1::super0::options >::AND
+        ::template same< typename _F2::super0::options >::AND
+        ::template same< typename _F3::super0::options >::AND
+        ::template same< typename _F4::super0::options >::AND
+        ::template same< typename _F5::super0::options >::AND
+        ::template same< typename _F6::super0::options >::AND
+        ::template same< typename _F7::super0::options >::AND
+        ::template same< typename _F8::super0::options >::AND
+        ::template same< typename _F9::super0::options >::value
+    > super0;
     typedef _F0 F0;
     typedef _F1 F1;
+    typedef _F2 F2;
+    typedef _F3 F3;
+    typedef _F4 F4;
+    typedef _F5 F5;
+    typedef _F6 F6;
+    typedef _F7 F7;
+    typedef _F8 F8;
+    typedef _F9 F9;
 
-    AddForce() : super0(), F0(), F1() {}
+
+    /* MEMBER FUNCTIONS */
+  public:
+    AddForce()
+      : super0(), F0(), F1(), F2(), F3(), F4(), F5(), F6(), F7(), F8(), F9() {}
 
     const AddForce & operator=(const AddForce & that) {
       super0::operator=(that);
       F0::operator=(that);
       F1::operator=(that);
+      F2::operator=(that);
+      F3::operator=(that);
+      F4::operator=(that);
+      F5::operator=(that);
+      F6::operator=(that);
+      F7::operator=(that);
+      F8::operator=(that);
+      F9::operator=(that);
       return *this;
     }
 
     void accel(       Vector<double,3> & a,
                 const Vector<double,3> & r,
-                const Vector<double,3> & v = V3(0,0,0),
+                const Vector<double,3> & v = V3(0.,0.,0.),
                 const double & t = 0.0,
                 const double & dt = 0.0,
                 const unsigned int & species = 0u ) const {
       F0::accel(a,r,v,t,dt,species);
-      Vector<double,3> a2;
-      F1::accel(a2,r,v,t,dt,species);
-      a +=  a2;
+      detail::addF<F1>().accel(*this,a,r,v,t,dt,species);
+      detail::addF<F2>().accel(*this,a,r,v,t,dt,species);
+      detail::addF<F3>().accel(*this,a,r,v,t,dt,species);
+      detail::addF<F4>().accel(*this,a,r,v,t,dt,species);
+      detail::addF<F5>().accel(*this,a,r,v,t,dt,species);
+      detail::addF<F6>().accel(*this,a,r,v,t,dt,species);
+      detail::addF<F7>().accel(*this,a,r,v,t,dt,species);
+      detail::addF<F8>().accel(*this,a,r,v,t,dt,species);
+      detail::addF<F9>().accel(*this,a,r,v,t,dt,species);
     }
 
     template < typename P >
@@ -231,16 +282,32 @@ namespace fields {
                 const double & dt,
                       P & p ) const {
       F0::accel(a,r,v,t,dt,p);
-      Vector<double,3> a2;
-      F1::accel(a2,r,v,t,dt,p);
-      a +=  a2;
+      detail::addF<F1>().accel(*this,a,r,v,t,dt,p);
+      detail::addF<F2>().accel(*this,a,r,v,t,dt,p);
+      detail::addF<F3>().accel(*this,a,r,v,t,dt,p);
+      detail::addF<F4>().accel(*this,a,r,v,t,dt,p);
+      detail::addF<F5>().accel(*this,a,r,v,t,dt,p);
+      detail::addF<F6>().accel(*this,a,r,v,t,dt,p);
+      detail::addF<F7>().accel(*this,a,r,v,t,dt,p);
+      detail::addF<F8>().accel(*this,a,r,v,t,dt,p);
+      detail::addF<F9>().accel(*this,a,r,v,t,dt,p);
     }
 
     double potential( const Vector<double,3> & r,
-                      const Vector<double,3> & v = V3(0,0,0),
+                      const Vector<double,3> & v = V3(0.,0.,0.),
                       const double & t = 0.0,
                       const unsigned int & species = 0u ) const {
-      return F0::potential(r,v,t,species) + F1::potential(r,v,t,species);
+      double retval = F0::potential(r,v,t,species);
+      detail::addF<F1>().potential(*this,retval,r,v,t,species);
+      detail::addF<F2>().potential(*this,retval,r,v,t,species);
+      detail::addF<F3>().potential(*this,retval,r,v,t,species);
+      detail::addF<F4>().potential(*this,retval,r,v,t,species);
+      detail::addF<F5>().potential(*this,retval,r,v,t,species);
+      detail::addF<F6>().potential(*this,retval,r,v,t,species);
+      detail::addF<F7>().potential(*this,retval,r,v,t,species);
+      detail::addF<F8>().potential(*this,retval,r,v,t,species);
+      detail::addF<F9>().potential(*this,retval,r,v,t,species);
+      return retval;
     }
 
     template < typename P >
@@ -248,7 +315,17 @@ namespace fields {
                       const Vector<double,3> & v,
                       const double & t,
                             P & p ) const {
-      return F0::potential(r,v,t,p) + F1::potential(r,v,t,p);
+      double retval = F0::potential(r,v,t,p);
+      detail::addF<F1>().potential(*this,retval,r,v,t,p);
+      detail::addF<F2>().potential(*this,retval,r,v,t,p);
+      detail::addF<F3>().potential(*this,retval,r,v,t,p);
+      detail::addF<F4>().potential(*this,retval,r,v,t,p);
+      detail::addF<F5>().potential(*this,retval,r,v,t,p);
+      detail::addF<F6>().potential(*this,retval,r,v,t,p);
+      detail::addF<F7>().potential(*this,retval,r,v,t,p);
+      detail::addF<F8>().potential(*this,retval,r,v,t,p);
+      detail::addF<F9>().potential(*this,retval,r,v,t,p);
+      return retval;
     }
 
     template < unsigned int ndim,
@@ -259,6 +336,14 @@ namespace fields {
                                       Particle & particle ) const {
       F0::applyStatisticalForce( xv, t, dt, particle );
       F1::applyStatisticalForce( xv, t, dt, particle );
+      F2::applyStatisticalForce( xv, t, dt, particle );
+      F3::applyStatisticalForce( xv, t, dt, particle );
+      F4::applyStatisticalForce( xv, t, dt, particle );
+      F5::applyStatisticalForce( xv, t, dt, particle );
+      F6::applyStatisticalForce( xv, t, dt, particle );
+      F7::applyStatisticalForce( xv, t, dt, particle );
+      F8::applyStatisticalForce( xv, t, dt, particle );
+      F9::applyStatisticalForce( xv, t, dt, particle );
     }
   };
 

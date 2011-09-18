@@ -10,8 +10,6 @@ namespace fields {
   /** Metafunction to generate the fields::options class.
    * @param _chimp_options
    *  All options used for the Chimp::RuntimeDB class.
-   *  Note that _chimp_options::setParticle< _Particle >::type will be used to
-   *  define the actual ChimpDB interface to use.
    *  [Default chimp::make_options<>::type]
    * */
   template < typename _chimp_options = chimp::make_options<>::type >
@@ -20,7 +18,7 @@ namespace fields {
       typedef _chimp_options                    chimp_options;
       typedef chimp::RuntimeDB< chimp_options > ChimpDB;
 
-      /* **** Template metafunctions to change DSMC configuration. **** */
+      /* **** Template metafunctions to change configuration. **** */
 
       /** Simple little sub-template class to make it easier to change the
        * extra data fields in each node. */
