@@ -175,7 +175,9 @@ namespace fields {
                                       Particle & particle ) const { }
   };
 
-  /** Adds Forces to get a total acceleration/ potential energy.
+  /** Adds several Forces to get a total acceleration/ potential energy.
+   * This metafunction can only be used ONCE to aggregate forces.  To add
+   * additional forces, use fields::AddForce.
    * Note that this is only really helpful for physically disjoint forces.  It
    * will not be physically correct to add two forces due to magnetic fields for
    * example.  In this case, one must add the fields together and then compute
@@ -186,13 +188,14 @@ namespace fields {
    *      chimp_instance.addParticleType("87Rb");
    *      ...
    *      typedef AddForce< BCalcs< BSrc >, Gravity > myForce;
-   *      myForce force;
+   *      myForce force(& chimp_instance);
+   *        // or init chimp_instance separately...
    *      force.db = &chimp_instance;//both forces use same chimp instance.
    *
    * Note that if F0 and F1 are from fields that use BaseField, this template
    * class will NOT cause their BaseField::delta values to be shared.
    *
-   * @see BField::BCalcs.
+   * @see fields::AddForce for repeated combining of forces.
    */
   template <
     typename _F0,
@@ -206,7 +209,7 @@ namespace fields {
     typename _F8 = detail::NullForce<typename _F0::super0::options, 8u>,
     typename _F9 = detail::NullForce<typename _F0::super0::options, 9u>
   >
-  class AddForce : public virtual BaseForce<typename _F0::super0::options>,
+  class AddForces: public virtual BaseForce<typename _F0::super0::options>,
                    public _F0, public _F1, public _F2, public _F3, public _F4,
                    public _F5, public _F6, public _F7, public _F8, public _F9 {
     /* TYPEDEFS */
@@ -238,11 +241,11 @@ namespace fields {
 
     /* MEMBER FUNCTIONS */
   public:
-    AddForce( const typename super0::options::ChimpDB * db = NULL )
+    AddForces( const typename super0::options::ChimpDB * db = NULL )
       : super0(db),
         F0(), F1(), F2(), F3(), F4(), F5(), F6(), F7(), F8(), F9() {}
 
-    const AddForce & operator=(const AddForce & that) {
+    const AddForces & operator=(const AddForces & that) {
       super0::operator=(that);
       F0::operator=(that);
       F1::operator=(that);
@@ -345,6 +348,100 @@ namespace fields {
       F7::applyStatisticalForce( xv, t, dt, particle );
       F8::applyStatisticalForce( xv, t, dt, particle );
       F9::applyStatisticalForce( xv, t, dt, particle );
+    }
+  };
+
+
+  /** Adds two Forces to get a total acceleration/ potential energy.
+   * This metafunction can be used over and over again to aggregate forces.
+   * Note that this is only really helpful for physically disjoint forces.  It
+   * will not be physically correct to add two forces due to magnetic fields for
+   * example.  In this case, one must add the fields together and then compute
+   * the forces with BCalcs.
+   *
+   * An an example use of this class, let's add the forces each due to gravity and
+   * magnetic fields:
+   *      chimp_instance.addParticleType("87Rb");
+   *      ...
+   *      typedef AddForce< BCalcs< BSrc >, Gravity > myForce;
+   *      myForce force;
+   *      force.db = &chimp_instance;//both forces use same chimp instance.
+   *
+   * Note that if F0 and F1 are from fields that use BaseField, this template
+   * class will NOT cause their BaseField::delta values to be shared.
+   *
+   * @see fields::AddForces for aggregating a larger set of forces.
+   */
+  template < class _F0, class _F1 >
+  class AddForce : public virtual BaseForce<typename _F0::super0::options>,
+                   public _F0, public _F1 {
+  public:
+    typedef BaseForce<
+      typename fields::detail
+      ::assert< typename _F0::super0::options >
+        ::template same< typename _F1::super0::options >::value
+    > super0;
+    typedef _F0 F0;
+    typedef _F1 F1;
+
+    AddForce( const typename super0::options::ChimpDB * db = NULL )
+      : super0(db), F0(), F1() {}
+
+    const AddForce & operator=(const AddForce & that) {
+      super0::operator=(that);
+      F0::operator=(that);
+      F1::operator=(that);
+      return *this;
+    }
+
+    void accel(       Vector<double,3> & a,
+                const Vector<double,3> & r,
+                const Vector<double,3> & v = V3(0,0,0),
+                const double & t = 0.0,
+                const double & dt = 0.0,
+                const unsigned int & species = 0u ) const {
+      F0::accel(a,r,v,t,dt,species);
+      Vector<double,3> a2;
+      F1::accel(a2,r,v,t,dt,species);
+      a +=  a2;
+    }
+
+    template < typename P >
+    void accel(       Vector<double,3> & a,
+                const Vector<double,3> & r,
+                const Vector<double,3> & v,
+                const double & t,
+                const double & dt,
+                      P & p ) const {
+      F0::accel(a,r,v,t,dt,p);
+      Vector<double,3> a2;
+      F1::accel(a2,r,v,t,dt,p);
+      a +=  a2;
+    }
+
+    double potential( const Vector<double,3> & r,
+                      const Vector<double,3> & v = V3(0,0,0),
+                      const double & t = 0.0,
+                      const unsigned int & species = 0u ) const {
+      return F0::potential(r,v,t,species) + F1::potential(r,v,t,species);
+    }
+
+    template < typename P >
+    double potential( const Vector<double,3> & r,
+                      const Vector<double,3> & v,
+                      const double & t,
+                            P & p ) const {
+      return F0::potential(r,v,t,p) + F1::potential(r,v,t,p);
+    }
+
+    template < unsigned int ndim,
+               typename Particle >
+    void applyStatisticalForce(       Vector<double,ndim> & xv,
+                                const double & t,
+                                const double & dt,
+                                      Particle & particle ) const {
+      F0::applyStatisticalForce( xv, t, dt, particle );
+      F1::applyStatisticalForce( xv, t, dt, particle );
     }
   };
 
