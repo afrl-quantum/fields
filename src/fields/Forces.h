@@ -447,32 +447,29 @@ namespace fields {
 
 
  /** A wrapper class for a statistical force for using with RK5 driver. */
- template <class _StatisticalForce>
- class StatisticalForceRKWrapper {
-  public:
-    StatisticalForceRKWrapper() : statisticalForcePtr(NULL) {}
-    _StatisticalForce * statisticalForcePtr;
-
+ struct StatisticalForceRKDerivs {
     template < unsigned int ndim,
-               typename Particle >
+               typename Particle,
+               typename Derivs >
     void first(       Vector<double,ndim> & xv,
                 const double & t,
                 const double & dt_step_current,
                       double & dt_step_next,
-                      Particle & particle ) {
-      statisticalForcePtr
-        ->applyStatisticalForce(xv, t, 0.5*dt_step_current, particle);
+                      Particle & particle,
+                      Derivs & derivs ) const {
+      derivs.applyStatisticalForce(xv, t, 0.5*dt_step_current, particle);
     }
 
     template < unsigned int ndim,
-               typename Particle >
+               typename Particle,
+               typename Derivs >
     void second(       Vector<double,ndim> & xv,
                  const double & t,
                  const double & dt_step_current,
                        double & dt_step_next,
-                       Particle & particle ) {
-      statisticalForcePtr
-        ->applyStatisticalForce(xv, t, 0.5*dt_step_current, particle);
+                       Particle & particle,
+                       Derivs & derivs ) const {
+      derivs.applyStatisticalForce(xv, t, 0.5*dt_step_current, particle);
     }
   };
 
