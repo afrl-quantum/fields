@@ -92,6 +92,13 @@ namespace fields {
             I = cur;
         }
 
+        /** Constructor to set all elements. */
+        inline ThinCurrentElement(
+                    const Vector<double,3u> & pa,
+                    const Vector<double,3u> & pb,
+                    const double & I
+                    ) : pa(pa), pb(pb), I(I) {}
+
         /** Constructor to set all elements.
          * @param v
          *     Expected to be a 7 element double array.
