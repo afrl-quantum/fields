@@ -308,7 +308,7 @@ namespace fields {
                    const double & t,
                    const double & dt,
                          P & p ) const {
-          this->accel( a, r, v, t, dt, species(p) );
+          this->accel(a, r, v, t, dt, static_cast<unsigned int>(species(p)));
         }
     
         /** Calculate the magnetic potential of \f$^{87}{\rm Rb}\f$ |F=1,mF=-1>.
@@ -331,7 +331,7 @@ namespace fields {
                          const Vector<double,3> & v,
                          const double & t,
                          const P & p ) const {
-          return this->potential(r,v,t);
+          return this->potential(r,v,t, static_cast<unsigned int>(species(p)));
         }
 
     };
