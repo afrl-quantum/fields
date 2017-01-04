@@ -164,7 +164,7 @@ namespace fields {
                       const Vector<double,3> & v,
                       const double & t,
                             P & p ) const {
-      return this->potential( r, v, t, species(p) );
+      return this->potential( r, v, t, static_cast<unsigned int>(species(p)) );
     }
 
     template < unsigned int ndim,
