@@ -48,7 +48,13 @@ contributions.  See http://www.umich.edu/~olsonse/ for my best contact info.
 
 //-----------------------------------------------------------
 /** \page fields_intro Introduction
-    This page introduces the user to the topic.
+    This library is for defining abstracted fields (from various arbitrary
+    sources) and related forces.  Using C++ template programming, this library
+    attempts to provide these abstracted interfaces while allowing for high
+    performance computing.  In other words, this abstracted template library
+    allows a computational programmer to develop various simulations using the
+    inheritance and object oriented nature of C++ without the negative impact of
+    using these features.
 */
     //Now you can proceed to the \ref advanced "advanced section".  
 
