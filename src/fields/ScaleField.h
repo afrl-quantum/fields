@@ -43,7 +43,7 @@
 #include <fields/Fields.h>
 
 #include <xylose/timing/Timing.h>
-#include <xylose/timing/element/Exponential.h>
+#include <xylose/timing/element/PowerLaw.h>
 
 #include <limits>
 
@@ -61,8 +61,8 @@ namespace fields {
     /* NON-MEMBER STORAGE */
   private:
     /** Default timing element applys a unity scaling. */
-    static timing::element::Exponential * mkDefaultTiming() {
-      return new timing::element::Exponential(
+    static timing::element::PowerLaw * mkDefaultTiming() {
+      return new timing::element::PowerLaw(
         -std::numeric_limits<double>::infinity(), 1.0, 1.0, 1.0
       );
     }

@@ -6,7 +6,7 @@
 
 #include <xylose/Vector.h>
 #include <xylose/timing/Timing.h>
-#include <xylose/timing/element/Exponential.h>
+#include <xylose/timing/element/PowerLaw.h>
 
 #include <physical/physical.h>
 
@@ -39,11 +39,11 @@ BOOST_AUTO_TEST_CASE( scale_vectorforce ) {
   gravity.db = &db;
 
   timing::TimingsVector timings;
-  timings.push_back(new timing::element::Exponential(1.5*ms, 1.0, 0.0, 0.0));
-  timings.push_back(new timing::element::Exponential(3.0*ms, 1.0, 0.0, 5.0));
-  timings.push_back(new timing::element::Exponential(1.0*ms, 1.0, 0.0, 8.0));
-  timings.push_back(new timing::element::Exponential(3.0*ms, 3.0, 3.0, 0.0));
-  timings.push_back(new timing::element::Exponential(2.0*ms, 1.0, 0.0, 1.0));
+  timings.push_back(new timing::element::PowerLaw(1.5*ms, 1.0, 0.0, 0.0));
+  timings.push_back(new timing::element::PowerLaw(3.0*ms, 1.0, 0.0, 5.0));
+  timings.push_back(new timing::element::PowerLaw(1.0*ms, 1.0, 0.0, 8.0));
+  timings.push_back(new timing::element::PowerLaw(3.0*ms, 3.0, 3.0, 0.0));
+  timings.push_back(new timing::element::PowerLaw(2.0*ms, 1.0, 0.0, 1.0));
   gravity.timing.timings = timings;
 
   const char * ans =

@@ -6,7 +6,7 @@
 
 #include <xylose/Vector.h>
 #include <xylose/timing/Timing.h>
-#include <xylose/timing/element/Exponential.h>
+#include <xylose/timing/element/PowerLaw.h>
 
 #include <physical/physical.h>
 
@@ -25,7 +25,7 @@ namespace {
   using xylose::V3;
   namespace timing = xylose::timing;
   using xylose::timing::element::Base;
-  using xylose::timing::element::Exponential;
+  using xylose::timing::element::PowerLaw;
 
   using namespace physical::units;
 
@@ -39,11 +39,11 @@ BOOST_AUTO_TEST_CASE( scale_scalarfield ) {
   field.bg = 1.0;
 
   timing::TimingsVector timings;
-  timings.push_back(new timing::element::Exponential(1.5*ms, 1.0, 0.0, 0.0));
-  timings.push_back(new timing::element::Exponential(3.0*ms, 1.0, 0.0, 5.0));
-  timings.push_back(new timing::element::Exponential(1.0*ms, 1.0, 0.0, 8.0));
-  timings.push_back(new timing::element::Exponential(3.0*ms, 3.0, 3.0, 0.0));
-  timings.push_back(new timing::element::Exponential(2.0*ms, 1.0, 0.0, 1.0));
+  timings.push_back(new timing::element::PowerLaw(1.5*ms, 1.0, 0.0, 0.0));
+  timings.push_back(new timing::element::PowerLaw(3.0*ms, 1.0, 0.0, 5.0));
+  timings.push_back(new timing::element::PowerLaw(1.0*ms, 1.0, 0.0, 8.0));
+  timings.push_back(new timing::element::PowerLaw(3.0*ms, 3.0, 3.0, 0.0));
+  timings.push_back(new timing::element::PowerLaw(2.0*ms, 1.0, 0.0, 1.0));
   field.timing.timings = timings;
 
   const char * ans = 
@@ -72,11 +72,11 @@ BOOST_AUTO_TEST_CASE( scale_vectorfield ) {
   field.bg = V3(1.0,-1.0,-.5);
 
   timing::TimingsVector timings;
-  timings.push_back(new timing::element::Exponential(1.5*ms, 1.0, 0.0, 0.0));
-  timings.push_back(new timing::element::Exponential(3.0*ms, 1.0, 0.0, 5.0));
-  timings.push_back(new timing::element::Exponential(1.0*ms, 1.0, 0.0, 8.0));
-  timings.push_back(new timing::element::Exponential(3.0*ms, 3.0, 3.0, 0.0));
-  timings.push_back(new timing::element::Exponential(2.0*ms, 1.0, 0.0, 1.0));
+  timings.push_back(new timing::element::PowerLaw(1.5*ms, 1.0, 0.0, 0.0));
+  timings.push_back(new timing::element::PowerLaw(3.0*ms, 1.0, 0.0, 5.0));
+  timings.push_back(new timing::element::PowerLaw(1.0*ms, 1.0, 0.0, 8.0));
+  timings.push_back(new timing::element::PowerLaw(3.0*ms, 3.0, 3.0, 0.0));
+  timings.push_back(new timing::element::PowerLaw(2.0*ms, 1.0, 0.0, 1.0));
   field.timing.timings = timings;
 
   const char * ans =

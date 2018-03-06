@@ -5,7 +5,7 @@
 
 #include <xylose/Vector.h>
 #include <xylose/timing/Timing.h>
-#include <xylose/timing/element/Exponential.h>
+#include <xylose/timing/element/PowerLaw.h>
 
 #include <physical/physical.h>
 

@@ -8,7 +8,7 @@
 #include <xylose/Vector.h>
 #include <xylose/timing/Timing.h>
 #include <xylose/timing/Printer.h>
-#include <xylose/timing/element/Exponential.h>
+#include <xylose/timing/element/PowerLaw.h>
 
 #include <physical/physical.h>
 
@@ -51,29 +51,29 @@ int main() {
   gravity.db = & db;
 
   timing::TimingsVector gtimings;
-  gtimings.push_back(new timing::element::Exponential(3.*ms, 1.0, 0.0, 0.0));
-  gtimings.push_back(new timing::element::Exponential(3.*ms, 1.0, 0.0, 1.0));
-  gtimings.push_back(new timing::element::Exponential(3.*ms, 1.0, 0.0, 1.0));
-  gtimings.push_back(new timing::element::Exponential(3.*ms, 3.0, 1.0, 0.0));
-  gtimings.push_back(new timing::element::Exponential(3.*ms, 1.0, 0.0, 1.0));
+  gtimings.push_back(new timing::element::PowerLaw(3.*ms, 1.0, 0.0, 0.0));
+  gtimings.push_back(new timing::element::PowerLaw(3.*ms, 1.0, 0.0, 1.0));
+  gtimings.push_back(new timing::element::PowerLaw(3.*ms, 1.0, 0.0, 1.0));
+  gtimings.push_back(new timing::element::PowerLaw(3.*ms, 3.0, 1.0, 0.0));
+  gtimings.push_back(new timing::element::PowerLaw(3.*ms, 1.0, 0.0, 1.0));
   gravity.timing.timings = gtimings;
 
   sfield.bg = 1.0;
   timing::TimingsVector stimings;
-  stimings.push_back(new timing::element::Exponential(2.*ms, 1.0, 0.0, 0.0));
-  stimings.push_back(new timing::element::Exponential(4.*ms, 1.0, 0.0, 5.0));
-  stimings.push_back(new timing::element::Exponential(1.*ms, 1.0, 0.0, 8.0));
-  stimings.push_back(new timing::element::Exponential(5.*ms, 3.0, 3.0, 0.0));
-  stimings.push_back(new timing::element::Exponential(3.*ms, 1.0, 0.0, 1.0));
+  stimings.push_back(new timing::element::PowerLaw(2.*ms, 1.0, 0.0, 0.0));
+  stimings.push_back(new timing::element::PowerLaw(4.*ms, 1.0, 0.0, 5.0));
+  stimings.push_back(new timing::element::PowerLaw(1.*ms, 1.0, 0.0, 8.0));
+  stimings.push_back(new timing::element::PowerLaw(5.*ms, 3.0, 3.0, 0.0));
+  stimings.push_back(new timing::element::PowerLaw(3.*ms, 1.0, 0.0, 1.0));
   sfield.timing.timings = stimings;
 
   vfield.bg = V3(1.0,-1.0,-.5);
   timing::TimingsVector vtimings;
-  vtimings.push_back(new timing::element::Exponential(4.*ms, 1.0, 0.0, 0.0));
-  vtimings.push_back(new timing::element::Exponential(2.*ms, 1.0, 0.0, 3.0));
-  vtimings.push_back(new timing::element::Exponential(5.*ms, 1.0, 0.0, 7.0));
-  vtimings.push_back(new timing::element::Exponential(2.*ms, 3.0, 7.0, 0.0));
-  vtimings.push_back(new timing::element::Exponential(2.*ms, 1.0, 0.0, 1.0));
+  vtimings.push_back(new timing::element::PowerLaw(4.*ms, 1.0, 0.0, 0.0));
+  vtimings.push_back(new timing::element::PowerLaw(2.*ms, 1.0, 0.0, 3.0));
+  vtimings.push_back(new timing::element::PowerLaw(5.*ms, 1.0, 0.0, 7.0));
+  vtimings.push_back(new timing::element::PowerLaw(2.*ms, 3.0, 7.0, 0.0));
+  vtimings.push_back(new timing::element::PowerLaw(2.*ms, 1.0, 0.0, 1.0));
   vfield.timing.timings = vtimings;
 
 
