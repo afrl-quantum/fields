@@ -64,7 +64,7 @@ constant VERSION : [ SHELL "printf `cd $(TOP); git describe 2> /dev/null` || pri
 
 
 # expect root project from ../ to load other projects
-use-project /root-project : ../ ;
+#use-project /root-project : ../ ;
 
 
 project /fields
