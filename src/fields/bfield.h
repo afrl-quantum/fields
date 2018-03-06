@@ -258,16 +258,31 @@ namespace fields {
      * @param BSrc
      *     Magnetic field; must be a derivation of the BaseField class.
      *
+     * @param options
+     *     Field options (@see fields::make_options).
+     *
+     * @param stateful_particles
+     *     Particles passed in via special accel/potential functions are
+     *     expected to have state information such that mu is calculed as:
+     *     mu = physical::constant::si::mu_B * state(particle).  This is
+     *     particularly useful for DSMC simulations where the paricles magnetic
+     *     sub-state is being tracked per particle.
+     *
      * @see Derivs::derivs.
      */
     template <
       typename BSrc,
-      typename options = fields::make_options<>::type
+      typename options = fields::make_options<>::type,
+      bool stateful_particles = false
     >
-    struct BCalcs : virtual BaseForce<options>, BSrc {
-      /* TYPEDEFS */
+    struct BCalcs;
+
+
+    template < typename BSrc, typename options >
+    struct BCalcs<BSrc, options, false> : virtual BaseForce<options>, BSrc {
+        /* TYPEDEFS */
         typedef BaseForce<options> super0;
-        typedef BSrc               super1;
+        typedef BSrc               MagneticField;
 
 
         /* MEMBER STORAGE */
@@ -281,13 +296,25 @@ namespace fields {
 
         /* MEMBER FUNCTIONS */
         /** Default constructor of BCalcs. */
-        BCalcs() : super0(), super1() {
+        BCalcs() : super0(), MagneticField() {
             mu = (-0.5) * (-1) * physical::constant::si::mu_B;
         }
 
         const BCalcs & operator=(const BCalcs & that) {
             mu = that.mu;
             return *this;
+        }
+
+        void accel(      Vector<double,3> & a,
+                   const Vector<double,3> & r,
+                   const Vector<double,3> & v,
+                   const double & t,
+                   const double & dt,
+                   const unsigned int & species,
+                   const double & _mu ) const {
+          //gradient(a, magnitude_of<MagneticField>((const MagneticField&)*this), r);
+          gradient_of_magnitude(a, (MagneticField&)*this, r);
+          a *= - _mu / (*super0::db)[species].chimp::property::mass::value;
         }
     
         void accel(      Vector<double,3> & a,
@@ -296,9 +323,7 @@ namespace fields {
                    const double & t = 0.0,
                    const double & dt = 0.0,
                    const unsigned int & species = 0u ) const {
-          //gradient(a, magnitude_of<super1>((const super1&)*this), r);
-          gradient_of_magnitude(a, (super1&)*this, r);
-          a *= - mu / (*super0::db)[species].chimp::property::mass::value;
+          this->accel(a, r, v, t, dt, species, this->mu);
         }
     
         template < typename P >
@@ -308,7 +333,8 @@ namespace fields {
                    const double & t,
                    const double & dt,
                          P & p ) const {
-          this->accel(a, r, v, t, dt, static_cast<unsigned int>(species(p)));
+          this->accel(a, r, v, t, dt, static_cast<unsigned int>(species(p)),
+                      this->mu);
         }
     
         /** Calculate the magnetic potential of \f$^{87}{\rm Rb}\f$ |F=1,mF=-1>.
@@ -318,12 +344,20 @@ namespace fields {
          *
          */
         double potential(const Vector<double,3> & r,
+                         const Vector<double,3> & v,
+                         const double & t,
+                         const unsigned int & species,
+                         const double & _mu ) const {
+          Vector<double,3> B;
+          MagneticField::operator()(B, r);
+          return _mu * B.abs();
+        }
+
+        double potential(const Vector<double,3> & r,
                          const Vector<double,3> & v = V3(0.,0.,0.),
                          const double & t = 0.0,
                          const unsigned int & species = 0u ) const {
-          Vector<double,3> B;
-          super1::operator()(B, r);
-          return mu * B.abs();
+          return this->potential(r,v,t, species, this->mu);
         }
 
         template < typename P >
@@ -331,9 +365,39 @@ namespace fields {
                          const Vector<double,3> & v,
                          const double & t,
                          const P & p ) const {
-          return this->potential(r,v,t, static_cast<unsigned int>(species(p)));
+          return this->potential(r,v,t, static_cast<unsigned int>(species(p)),
+                                 this->mu);
         }
 
+    };
+
+    template < typename BSrc, typename options >
+    struct BCalcs<BSrc, options, true> :  BCalcs<BSrc, options, false> {
+        /* TYPEDEFS */
+        typedef BCalcs<BSrc, options, false> super;
+
+        using super::accel;
+        using super::potential;
+
+        template < typename P >
+        void accel(      Vector<double,3> & a,
+                   const Vector<double,3> & r,
+                   const Vector<double,3> & v,
+                   const double & t,
+                   const double & dt,
+                         P & p) const {
+          super::accel(a, r, v, t, dt, static_cast<unsigned int>(species(p)),
+                       physical::constant::si::mu_B * state(p));
+        }
+
+        template < typename P >
+        double potential(const Vector<double,3> & r,
+                         const Vector<double,3> & v,
+                         const double & t,
+                         const P & p) const {
+          return super::potential(r,v,t, static_cast<unsigned int>(species(p)),
+                                  physical::constant::si::mu_B * state(p));
+        }
     };
 
   } /* namespace fields::BField */
